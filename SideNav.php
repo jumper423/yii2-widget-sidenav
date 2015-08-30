@@ -89,17 +89,12 @@ class SideNav extends \yii\widgets\Menu
     /**
      * @var string indicator for a menu sub-item
      */
-    public $indItem = '&raquo; ';
+    public $indItem = ' ';
 
     /**
-     * @var string indicator for a opened sub-menu
+     * @var string indicator for a sub-menu
      */
-    public $indMenuOpen = '<i class="indicator glyphicon glyphicon-chevron-down"></i>';
-
-    /**
-     * @var string indicator for a closed sub-menu
-     */
-    public $indMenuClose = '<i class="indicator glyphicon glyphicon-chevron-right"></i>';
+    public $indMenu = '<i class="indicator glyphicon glyphicon-chevron-down"></i>';
 
     /**
      * @var array list of sidenav menu items. Each menu item should be an array of the following structure:
@@ -162,13 +157,23 @@ class SideNav extends \yii\widgets\Menu
      * This property will be overridden by the `template` option set in individual menu items via [[items]].
      */
     public $labelTemplate = '{icon}{label}';
+    /**
+     * @var array the HTML attributes for the menu's container tag. The following special options are recognized:
+     *
+     * - tag: string, defaults to "ul", the tag name of the item container tags. Set to false to disable container tag.
+     *
+     * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
+     */
+    public $options = [
+        'class' => 'nav nav-pills nav-stacked kv-sidenav',
+    ];
 
     public function init()
     {
         parent::init();
         SideNavAsset::register($this->getView());
         $this->markTopItems();
-        Html::addCssClass($this->options, 'nav nav-pills nav-stacked kv-sidenav');
+        Html::addCssClass($this->options, '');
     }
 
     /**
@@ -182,10 +187,7 @@ class SideNav extends \yii\widgets\Menu
             Html::addCssClass($this->headingOptions, 'panel-heading');
             $heading = Html::tag('div', '<h3 class="panel-title">' . $this->heading . '</h3>', $this->headingOptions);
         }
-        $body = Html::tag('div', $this->renderMenu(), ['class' => 'table']);
-        $type = in_array($this->type, self::$_validTypes) ? $this->type : self::TYPE_DEFAULT;
-        Html::addCssClass($this->containerOptions, "panel panel-{$type}");
-        echo Html::tag('div', $heading . $body, $this->containerOptions);
+        echo $heading . $this->renderMenu();
     }
 
     /**
@@ -237,19 +239,16 @@ class SideNav extends \yii\widgets\Menu
             if (empty($item['items'])) {
                 $template = str_replace('{icon}', $this->indItem . '{icon}', $template);
             } else {
-                $template = isset($item['template']) ? $item['template'] :'<a href="{url}" class="kv-toggle">{icon}{label}</a>';
-                $openOptions = ($item['active']) ? ['class' => 'opened'] : ['class' => 'opened', 'style' => 'display:none'];
-                $closeOptions = ($item['active']) ? ['class' => 'closed', 'style' => 'display:none'] : ['class' => 'closed'];
-                $indicator = Html::tag('span', $this->indMenuOpen, $openOptions) . Html::tag('span', $this->indMenuClose, $closeOptions);
-                $template = str_replace('{icon}', $indicator . '{icon}', $template);
+                $template = isset($item['template']) ? $item['template'] :'<a href="{url}">{icon}<span>{label}</span>{indicator}</a>';
             }
         }
-        $icon = empty($item['icon']) ? '' : '<span class="' . $this->iconPrefix . $item['icon'] . '"></span> &nbsp;';
+        $icon = empty($item['icon']) ? '' : '<i class="' . $this->iconPrefix . $item['icon'] . '"></i> ';
         unset($item['icon'], $item['top']);
         return strtr($template, [
             '{url}' => $url,
             '{label}' => $item['label'],
-            '{icon}' => $icon
+            '{icon}' => $icon,
+            '{indicator}' => $this->indMenu,
         ]);
     }
 
