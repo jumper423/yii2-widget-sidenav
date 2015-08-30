@@ -7,7 +7,7 @@
  * @version 1.0.0
  */
 
-namespace kartik\sidenav;
+namespace jumper423\sidenav;
 
 use Yii;
 use yii\base\InvalidConfigException;
@@ -69,7 +69,7 @@ class SideNav extends \yii\widgets\Menu
      * for usage with glyphicons available with Bootstrap.
      */
     public $iconPrefix = 'glyphicon glyphicon-';
-    
+
     /**
      * @var array string/boolean the sidenav heading. This is not HTML encoded
      * When set to false or null, no heading container will be displayed.
@@ -136,14 +136,37 @@ class SideNav extends \yii\widgets\Menu
         self::TYPE_WARNING,
     ];
 
+    /**
+     * @var boolean whether to activate parent menu items when one of the corresponding child menu items is active.
+     * The activated parent menu items will also have its CSS classes appended with [[activeCssClass]].
+     */
+    public $activateParents = true;
+
+    /**
+     * @var string the template used to render a list of sub-menus.
+     * In this template, the token `{items}` will be replaced with the rendered sub-menu items.
+     */
+    public $submenuTemplate = "\n<ul class='nav nav-pills nav-stacked'>\n{items}\n</ul>\n";
+
+    /**
+     * @var string the template used to render the body of a menu which is a link.
+     * In this template, the token `{url}` will be replaced with the corresponding link URL;
+     * while `{label}` will be replaced with the link text.
+     * This property will be overridden by the `template` option set in individual menu items via [[items]].
+     */
+    public $linkTemplate = '<a href="{url}">{icon}{label}</a>';
+
+    /**
+     * @var string the template used to render the body of a menu which is NOT a link.
+     * In this template, the token `{label}` will be replaced with the label of the menu item.
+     * This property will be overridden by the `template` option set in individual menu items via [[items]].
+     */
+    public $labelTemplate = '{icon}{label}';
+
     public function init()
     {
         parent::init();
         SideNavAsset::register($this->getView());
-        $this->activateParents = true;
-        $this->submenuTemplate = "\n<ul class='nav nav-pills nav-stacked'>\n{items}\n</ul>\n";
-        $this->linkTemplate = '<a href="{url}">{icon}{label}</a>';
-        $this->labelTemplate = '{icon}{label}';
         $this->markTopItems();
         Html::addCssClass($this->options, 'nav nav-pills nav-stacked kv-sidenav');
     }
