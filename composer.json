@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "kartik\\sidenav\\": ""
+            "jumper423\\sidenav\\": ""
         }
     }
 }
